@@ -1,4 +1,4 @@
-这个资源库包含了《音乐生成入门》系列视频中的音乐生成系统的代码。\
+这个资源库包含了[《音乐生成入门》](https://www.bilibili.com/video/BV1RL411J7SA#reply5005105074)系列视频中的音乐生成系统的代码。\
 \
 系统使用的数据集来自[jukedeck/nottingham-dataset](https://github.com/jukedeck/nottingham-dataset)，总共包含1034首音乐，以压缩文件的形式存放在`dataset`文件夹下，需要使用时请把它解压到`dataset`文件夹内。
 
