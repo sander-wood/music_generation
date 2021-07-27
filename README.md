@@ -24,7 +24,7 @@ PS: 第三方库可以使用`pip install`命令安装
 1. 将所有符号音乐文件存入`dataset`文件夹下，如果自己的数据量较小，可以保留这个系统原本的数据集；\
 2. 运行`encoding_module.py`，将会得到词表`vocabulary.json`和语料库`corpus.bin`；\
 3. 运行`rnn_model.py`，训练结束后会得到模型权重`weights.hdf5`（此处预计耗时2小时）;\
- \
+# 
 之后就可以使用`midi_generator.py`生成出符合新数据集音乐风格的作品了。\
 \
 如果需要调整参数可以在`utils.py`中进行修改，不推荐在其他文件下修改参数。
