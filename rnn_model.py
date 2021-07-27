@@ -7,33 +7,33 @@ from tensorflow.python.keras.utils.np_utils import to_categorical
 from encoding_module import *
 
 def create_training_data(segment_length=SEGMENT_LENGTH, corpus_path=CORPUS_PATH):
-    """Creates training data for the RNN model.
+    """为RNN模型创建训练数据。
 
-    :param segment_length (int): Length of each segment we want to divide the encoded data into
-    :param corpus_path (str): Path to the corpus
+    :param segment_length (int): 输入序列的长度
+    :param corpus_path (str): 语料库的路径
 
-    :return input_notes (ndarray): Input part of training data
-    :return output_notes (ndarray): Output part of training data
+    :return input_notes (ndarray): 训练集的输入序列集合
+    :return output_notes (ndarray): 训练集的预测目标集合
     """
 
-    # load corpus
+    # 加载语料库
     with open(corpus_path, "rb") as filepath:
         corpus = pickle.load(filepath)
 
-    # input and output of training data
+    # 训练集的输入序列和预测目标
     input_notes = []
     output_notes = []
 
-    # get the index of filler
+    # 得到星号的下标
     filler_index = NOTE_TO_INT()['*']
 
-    # process each song in the corpus
+    # 处理语料库中的每一首编码歌曲
     for song in corpus:
 
-        # append fillers to the song 
+        # 将星号添加到编码歌曲
         song = [filler_index]*segment_length + song + [filler_index]
         
-        # create segment-target pairs
+        # 创建输入序列和对应的预测目标
         for i in range(len(song)-segment_length):
                 
             segment = song[i: i+segment_length]
@@ -42,7 +42,7 @@ def create_training_data(segment_length=SEGMENT_LENGTH, corpus_path=CORPUS_PATH)
             input_notes.append(segment)
             output_notes.append(target)
     
-    # one-hot vectorize input and output
+    # 将数字转化为独热向量
     input_notes = to_categorical(input_notes, num_classes=len(NOTE_TO_INT()))
     output_notes = to_categorical(output_notes, num_classes=len(NOTE_TO_INT()))
 
@@ -50,14 +50,14 @@ def create_training_data(segment_length=SEGMENT_LENGTH, corpus_path=CORPUS_PATH)
 
 
 def build_model(weights_path=None):
-    """Builds RNN model.
+    """构建RNN模型。
 
-    :param weights_path (str): Path to weights of RNN model
+    :param weights_path (str): 模型权重的路径
 
-    :return model: RNN model
+    :return model: RNN模型
     """
 
-    # create model architecture
+    # 创建模型架构
     input_layer = Input(shape=(SEGMENT_LENGTH, len(NOTE_TO_INT())), 
                         name='input_layer')
     rnn_layer = LSTM(units=RNN_SIZE, 
@@ -68,11 +68,11 @@ def build_model(weights_path=None):
 
     model = Model(input_layer, output_layer)
 
-    # compile model
+    # 编译模型
     model.compile(optimizer='rmsprop',
                   loss='categorical_crossentropy')
 
-    # summarise model or load weights
+    # 总结模型或者加载权重
     if weights_path==None:
 
         model.summary()
@@ -85,41 +85,41 @@ def build_model(weights_path=None):
 
 
 def train_model(input_notes, output_notes, weights_path=WEIGHTS_PATH):
-    """Trains and saves RNN model.
+    """训练并保存RNN模型。
 
-    :param input_notes (ndarray): Input part of training data
-    :param output_notes (ndarray): Output part of training data
-    :param weights_path (str): Path to weights of RNN model
+    :param input_notes (ndarray): 训练集的输入序列集合
+    :param output_notes (ndarray): 训练集的预测目标集合
+    :param weights_path (str): 模型权重的路径
 
     :return:
     """
 
-    # build RNN model
+    # 构建模型
     model = build_model()
 
-    # load weights or delete it
+    # 尝试加载模型权重，读取失败则删除
     if os.path.exists(weights_path):
         
         try:
 
             model.load_weights(weights_path)
-            print("checkpoint loaded")
+            print("模型权重加载成功")
         
         except:
 
             os.remove(weights_path)
-            print("checkpoint deleted")
+            print("旧模型权重已删除")
 
-    print("Train on %d samples" %(input_notes.shape[0]))
+    print("在%d个样本上训练" %(input_notes.shape[0]))
 
-    # save weights
+    # 保存模型权重
     checkpoint = ModelCheckpoint(filepath=weights_path,
                                  monitor='loss',
                                  verbose=0,
                                  save_best_only=True,
                                  mode='min')
 
-    # train model
+    # 训练模型
     model.fit(x=input_notes,
               y=output_notes,
               batch_size=BATCH_SIZE,

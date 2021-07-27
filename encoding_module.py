@@ -9,19 +9,19 @@ from music21 import chord
 from utils import *
 
 def transpose(score):
-    """Transpose the score to C major/A minor.
+    """将音乐移调至C大调/a小调。
 
-    :param score: Original score
+    :param score: 原本的乐谱
 
-    :return score: Transposed score
+    :return score: 移调后的乐谱
     """
 
     for element in score.recurse():
         
-        # key signature found
+        # 找到调号
         if isinstance(element, key.Key):
 
-            # tonic found
+            # 找到主音
             if element.mode == 'major':
                 
                 tonic = element.tonic
@@ -30,20 +30,20 @@ def transpose(score):
 
                 tonic = element.parallel.tonic
 
-            # transpose score
+            # 根据主音进行移调
             gap = interval.Interval(tonic, pitch.Pitch('C'))
             score = score.transpose(gap)
 
             break
         
-        # no key signatrue found
+        # 未找到调号
         elif isinstance(element, note.Note) or \
              isinstance(element, note.Rest) or \
              isinstance(element, chord.Chord):
             
             break
         
-        # other element
+        # 其他元素
         else:
 
             continue
@@ -52,29 +52,29 @@ def transpose(score):
 
 
 def encode_data(dataset_path=DATASET_PATH):
-    """Encodes the symbloc music in the dataset folder.
+    """编码数据集文件夹下的符号音乐文件。
 
-    :param dataset_path (str): Path to the dataset
+    :param dataset_path (str): 数据集的路径
 
-    :return data, filenames (list): Encoded songs and their file names
+    :return data, filenames (list): 编码歌曲及其文件名
     """
 
-    # encoded songs and their file names
+    # 编码歌曲及其文件名
     data = []
     filenames = []
 
-    # loop through the dataset folder
+    # 遍历数据集路径下的所有文件
     for dirpath, dirlist, filelist in os.walk(dataset_path):
         
-        # process each file
+        # 处理每一个文件
         for this_file in filelist:
 
-            # ensure extension is valid
+            # 确保后缀合法
             if os.path.splitext(this_file)[-1] not in EXTENSION:
 
                 continue
         
-            # parse the file
+            # 解析当前文件
             filename = os.path.join(dirpath, this_file)
 
             try:
@@ -83,21 +83,21 @@ def encode_data(dataset_path=DATASET_PATH):
 
             except:
 
-                print("Warning: Failed to read \"%s\"" %filename)
+                print("警告：无法读取文件\"%s\"" %filename)
                 continue
             
-            print("Parsing \"%s\"" %filename)
+            print("正在解析\"%s\"" %filename)
 
-            # keep the first part (usually is the melody) of score
+            # 保留当前音乐中的第一个声部（通常是旋律部分）
             score = score.parts[0].flat
 
-            # transpose to C major/A minor
+            # 移调至C大调/a小调
             score = transpose(score)
 
-            # encoded song
+            # 编码歌曲序列
             song = []
 
-            # process each note (chord) in the score 
+            # 处理编码歌曲中的每一个音符（和弦）
             for element in score.recurse():
                 
                 if isinstance(element, note.Note):
@@ -119,47 +119,47 @@ def encode_data(dataset_path=DATASET_PATH):
 
                     continue
                 
-                # ensure duration is valid
+                # 确保时值合法
                 if note_duration%0.25 == 0:
 
-                    # encode note
+                    # 编码音符
                     note_step = int(note_duration/0.25)
                     song += [str(note_pitch)] + ['-']*(note_step-1)
                 
                 else:
                     
-                    # unacceptable duration found
+                    # 发现不可接受的时值
                     song = None
-                    print("Warning: Found an unacceptable duration when reading the file \"%s\"" %filename)
+                    print("警告：在读取\"%s\"时发现不可接受的时值" %filename)
                     break
             
             if song!=None:
 
-                 # save the encoded song and its name
+                 # 保存编码歌曲及其文件名
                 data.append(song)
                 filenames.append(os.path.splitext(os.path.basename(filename))[0])
 
-    print("Successfully encoded %d songs" %(len(data)))
+    print("成功编码%d首歌曲" %(len(data)))
 
     return data, filenames
 
 
 def save_corpus(data, corpus_path=CORPUS_PATH, vocabulary_path=VOCABULARY_PATH):
-    """Converts and saves the corpus.
+    """转换并保存语料库。
 
-    :param data (list): Encoded songs
-    :param corpus_path (str): Path to the corpus
-    :param vocabulary_path (str): Path to the vocabulary
+    :param data (list): 编码歌曲数据
+    :param corpus_path (str): 语料库的路径
+    :param vocabulary_path (str): 词表的路径
 
     :return:
     """
 
-    # create and save vocabulary (with the filler '*')
+    # 创建并保存词表（附带星号“*”）
     vocabulary = sorted(set(sum(data, [])+['*']))
     with open(vocabulary_path, 'w') as filepath:
         json.dump(vocabulary, filepath, indent=4)
 
-    # map each element in data to int and save as corpus
+    # 将编码歌曲数据中的每一个音符映射成数字，并保存为语料库
     note2int = NOTE_TO_INT()
     corpus = [[note2int[note] for note in song] for song in data]
     with open(corpus_path, "wb") as filepath:

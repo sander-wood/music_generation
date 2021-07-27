@@ -1,6 +1,6 @@
 import json
 
-# paths
+# 路径设置
 DATASET_PATH = "dataset"
 CORPUS_PATH = "corpus.bin"
 VOCABULARY_PATH = 'vocabulary.json'
@@ -8,26 +8,26 @@ WEIGHTS_PATH = 'weights.hdf5'
 INPUTS_PATH = "inputs"
 OUTPUTS_PATH = "outputs"
 
-# parameters for encoding_module.py
+# 符号音乐编码模块的参数
 EXTENSION = ['.musicxml', '.xml', '.mxl', '.midi', '.mid', '.krn']
 
-# parameters for rnn_model.py
+# RNN模型的参数
 SEGMENT_LENGTH = 128
 RNN_SIZE = 256
 BATCH_SIZE = 512
 EPOCHS = 30
 
-# parameters for midi_generator.py
+# MIDI生成器的参数
 MAX_BARS = 0
 TEMPERATURE = 0.8
 MIDI_NUM = 3
 
 def NOTE_TO_INT(vocabulary_path=VOCABULARY_PATH):
-    """Loads note2int dictionary.
+    """加载将音符映射为数字的词典。
 
-    :param vocabulary_path (str): Path to vocabulary
+    :param vocabulary_path (str): 词表的路径
 
-    :return note2int (dict): Note-to-int mapping
+    :return note2int (dict): 音符到数字的映射
     """
 
     with open(vocabulary_path, 'r') as filepath:
@@ -37,11 +37,11 @@ def NOTE_TO_INT(vocabulary_path=VOCABULARY_PATH):
 
 
 def INT_TO_NOTE(vocabulary_path=VOCABULARY_PATH):
-    """Loads int2note dictionary.
+    """加载将数字映射为音符的词典。
     
-    :param vocabulary_path (str): Path to vocabulary
+    :param vocabulary_path (str): 词表的路径
 
-    :return int2note (dict): Int-to-note mapping
+    :return int2note (dict): 数字到音符的映射
     """
 
     with open(vocabulary_path, 'r') as filepath:
