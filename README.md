@@ -22,7 +22,7 @@ When there are symbolic music files in the `inputs` folder, after running `midi_
 ## Use Your Own Dataset
 1.　Store all symbolic music files in the `dataset` folder, if you only have a small amount of data yourself, you can keep the original dataset of this system;\
 2.　Run `encoding_module.py`, which will give you the vocabulary `vocabulary.json` of the dataset, and the corpus `corpus.bin`; \
-3.　Run `rnn_model.py`, which will give you the model weights `weights.hdf5` after training (estimated time here is 2 hours);\
+3.　Run `rnn_model.py`, which will give you the model weights `weights.hdf5` after training (estimated time here is 2 hours).\
 \
 After that, you can use `midi_generator.py` to generate music that matches the musical style of the new dataset. \
 \
