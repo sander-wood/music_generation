@@ -21,10 +21,10 @@ PS: 第三方库可以使用`pip install`命令安装
 当`inputs`文件夹下存在符号音乐文件时，运行`midi_generator.py`后，系统会基于这些音乐进行续写并生成MIDI音乐至`outputs`文件夹下，新生成的音乐包含原曲的全部音符（若原曲不在C大调/a小调上，则会进行移调）。
 
 ## 替换自己的数据集
-1. 将所有符号音乐文件存入`dataset`文件夹下，如果自己的数据量较小，可以保留这个系统原本的数据集；\
-2. 运行`encoding_module.py`，将会得到词表`vocabulary.json`和语料库`corpus.bin`；\
-3. 运行`rnn_model.py`，训练结束后会得到模型权重`weights.hdf5`（此处预计耗时2小时）;\
-# 
+1.　将所有符号音乐文件存入`dataset`文件夹下，如果自己的数据量较小，可以保留这个系统原本的数据集；\
+2.　运行`encoding_module.py`，将会得到词表`vocabulary.json`和语料库`corpus.bin`；\
+3.　运行`rnn_model.py`，训练结束后会得到模型权重`weights.hdf5`（此处预计耗时2小时）;\
+\
 之后就可以使用`midi_generator.py`生成出符合新数据集音乐风格的作品了。\
 \
 如果需要调整参数可以在`utils.py`中进行修改，不推荐在其他文件下修改参数。
